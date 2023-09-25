@@ -8,7 +8,8 @@ final class TokenParserImpl: TokenParser {
     
     func parse(tokenInfo: String) -> (token: String, expires: TimeInterval, info: [String: String])? {
         var token: String?
-        var expires: TimeInterval = 0
+        var expires: TimeInterval? = TimeInterval(0)
+
         var info = [String: String]()
         
         let components = tokenInfo.components(separatedBy: "&")
@@ -31,10 +32,10 @@ final class TokenParserImpl: TokenParser {
             }
         }
         
-        guard let unwrappedToken = token else {
+        guard let unwrappedToken = token, let unwrappedExpires = expires else {
             return nil
         }
         
-        return (unwrappedToken, expires, info)
+        return (unwrappedToken, unwrappedExpires, info)
     }
 }
