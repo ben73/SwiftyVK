@@ -70,8 +70,9 @@ final class AuthorizatorImpl: Authorizator {
                 scopes: scopes,
                 revoke: revoke
             )
-
-            return try getToken(sessionId: sessionId, webRequest: webAuthRequest, appAuthQuery: vkAppAuthQuery)
+            
+            try vkAppProxy.send(query: vkAppAuthQuery)
+            return try getToken(sessionId: sessionId, request: webAuthRequest)
         }
     }
     
@@ -127,32 +128,8 @@ final class AuthorizatorImpl: Authorizator {
     
     private func getToken(sessionId: String, request: URLRequest) throws -> InvalidatableToken {
         defer { webPresenter.dismiss() }
-
+        
         let token = try vkAppToken ?? webToken(sessionId: sessionId, request: request)
-        try tokenStorage.save(token, for:  sessionId)
-        return token
-    }
-
-    private func getToken(
-        sessionId: String,
-        webRequest: URLRequest,
-        appAuthQuery: String
-        ) throws -> InvalidatableToken {
-        defer { webPresenter.dismiss() }
-
-        let token: InvalidatableToken
-        if vkAppProxy.canSend(query: appAuthQuery) {
-            vkAppProxy.send(query: appAuthQuery)
-            guard let vkAppToken = vkAppToken else {
-                throw VKError.authorizationCancelled
-            }
-
-            token = vkAppToken
-        }
-        else {
-            token = try webToken(sessionId: sessionId, request: webRequest)
-        }
-
         try tokenStorage.save(token, for:  sessionId)
         return token
     }
