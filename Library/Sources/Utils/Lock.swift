@@ -6,7 +6,6 @@ protocol Lock {
 }
 
 extension Lock {
-    @discardableResult
     func perform<T> (scope: () throws -> (T)) rethrows -> T {
         lock()
         defer { unlock() }

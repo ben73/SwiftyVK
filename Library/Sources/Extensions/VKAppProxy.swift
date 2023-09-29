@@ -24,10 +24,6 @@ final class VKAppProxyImpl: VKAppProxy {
         self.appLifecycleProvider = appLifecycleProvider
     }
     
-    deinit {
-        appLifecycleProvider.unsubscribe(self)
-    }
-    
     @discardableResult
     func send(query: String) -> Bool {
         guard openVkApp(query: query) else {
